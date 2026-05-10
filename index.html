@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>暗算クイズ</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #fff7e6, #eaf4ff);
+      color: #333;
+      text-align: center;
+    }
+
+    header {
+      padding: 25px 10px;
+      background: #ffffffdd;
+      box-shadow: 0 2px 10px #0001;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 25px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 8px 25px #0002;
+    }
+
+    .ad {
+      margin: 15px auto;
+      padding: 18px;
+      background: #f3f3f3;
+      border: 2px dashed #bbb;
+      border-radius: 12px;
+      color: #777;
+      max-width: 500px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .badge {
+      background: #f5f7fb;
+      padding: 10px 14px;
+      border-radius: 12px;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .problem {
+      font-size: 48px;
+      font-weight: 900;
+      margin: 25px 0 10px;
+      color: #222;
+    }
+
+    input {
+      width: 80%;
+      max-width: 320px;
+      padding: 14px;
+      font-size: 24px;
+      text-align: center;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #2f80ed;
+    }
+
+    button {
+      border: none;
+      padding: 14px 20px;
+      border-radius: 12px;
+      background: #2f80ed;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      margin: 8px;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #1c63bd;
+      transform: scale(1.03);
+    }
+
+    .level-buttons button {
+      background: #ff9800;
+    }
+
+    .level-buttons button:hover {
+      background: #e68900;
+    }
+
+    .status {
+      margin-top: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      min-height: 30px;
+    }
+
+    .result {
+      font-size: 22px;
+      line-height: 1.7;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #777;
+      margin-top: 15px;
+    }
+
+    @media (max-width: 500px) {
+      .problem {
+        font-size: 38px;
+      }
+
+      input {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>暗算クイズ</h1>
+  <p>頭の中だけで計算して答えよう！</p>
+</header>
+
+<div class="ad">
+  広告エリア
+</div>
+
+<div class="container">
+  <div id="start">
+    <h2>難易度を選んでください</h2>
+    <div class="level-buttons">
+      <button onclick="startGame('easy')">初級</button>
+      <button onclick="startGame('normal')">中級</button>
+      <button onclick="startGame('hard')">上級</button>
+      <button onclick="startGame('oni')">鬼畜</button>
+    </div>
+  </div>
+
+  <div id="game" style="display:none;">
+    <div class="top">
+      <div class="badge">問題：<span id="qNum">1</span> / 10</div>
+      <div class="badge">スコア：<span id="score">0</span></div>
+      <div class="badge">残り時間：<span id="time">60</span>秒</div>
+    </div>
+
+    <div class="problem" id="problem">1 + 1</div>
+
+    <input id="answer" type="number" placeholder="答えを入力" />
+    <br>
+    <button onclick="checkAnswer()">回答する</button>
+    <button onclick="skipQuestion()">スキップ</button>
+
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="result" style="display:none;"></div>
+
+  <div class="small">
+    ※スマホでも遊べます。Enterキーでも回答できます。
+  </div>
+</div>
+
+<script>
+  let level = "easy";
+  let current = 0;
+  let score = 0;
+  let correctAnswer = 0;
+  let timeLeft = 60;
+  let timer = null;
+  let totalQuestions = 10;
+
+  const problemEl = document.getElementById("problem");
+  const answerEl = document.getElementById("answer");
+  const statusEl = document.getElementById("status");
+  const qNumEl = document.getElementById("qNum");
+  const scoreEl = document.getElementById("score");
+  const timeEl = document.getElementById("time");
+
+  function startGame(selectedLevel) {
+    level = selectedLevel;
+    current = 0;
+    score = 0;
+
+    if (level === "easy") timeLeft = 60;
+    if (level === "normal") timeLeft = 50;
+    if (level === "hard") timeLeft = 40;
+    if (level === "oni") timeLeft = 30;
+
+    document.getElementById("start").style.display = "none";
+    document.getElementById("game").style.display = "block";
+    document.getElementById("result").style.display = "none";
+
+    scoreEl.textContent = score;
+    timeEl.textContent = timeLeft;
+
+    nextQuestion();
+
+    timer = setInterval(() => {
+      timeLeft--;
+      timeEl.textContent = timeLeft;
+
+      if (timeLeft <= 0) {
+        finishGame();
+      }
+    }, 1000);
+  }
+
+  function nextQuestion() {
+    if (current >= totalQuestions) {
+      finishGame();
+      return;
+    }
+
+    current++;
+    qNumEl.textContent = current;
+    statusEl.textContent = "";
+    answerEl.value = "";
+    answerEl.focus();
+
+    const q = createProblem(level);
+    problemEl.textContent = q.text;
+    correctAnswer = q.answer;
+  }
+
+  function createProblem(level) {
+    let a, b, c, op, text, answer;
+
+    if (level === "easy") {
+      a = rand(1, 20);
+      b = rand(1, 20);
+      op = randomItem(["+", "-"]);
+
+      if (op === "+") {
+        answer = a + b;
+      } else {
+        if (b > a) [a, b] = [b, a];
+        answer = a - b;
+      }
+
+      text = `${a} ${op} ${b}`;
+    }
+
+    if (level === "normal") {
+      a = rand(10, 99);
+      b = rand(2, 20);
+      op = randomItem(["+", "-", "×"]);
+
+      if (op === "+") answer = a + b;
+      if (op === "-") {
+        if (b > a) [a, b] = [b, a];
+        answer = a - b;
+      }
+      if (op === "×") answer = a * b;
+
+      text = `${a} ${op} ${b}`;
+    }
+
+    if (level === "hard") {
+      a = rand(20, 99);
+      b = rand(10, 50);
+      c = rand(2, 9);
+      op = randomItem(["+", "-", "×"]);
+
+      if (op === "+") {
+        answer = a + b + c;
+        text = `${a} + ${b} + ${c}`;
+      }
+
+      if (op === "-") {
+        answer = a + b - c;
+        text = `${a} + ${b} - ${c}`;
+      }
+
+      if (op === "×") {
+        answer = a * c + b;
+        text = `${a} × ${c} + ${b}`;
+      }
+    }
+
+    if (level === "oni") {
+      a = rand(50, 199);
+      b = rand(10, 99);
+      c = rand(2, 12);
+      op = randomItem(["mix1", "mix2", "mix3"]);
+
+      if (op === "mix1") {
+        answer = a + b * c;
+        text = `${a} + ${b} × ${c}`;
+      }
+
+      if (op === "mix2") {
+        answer = (a - b) * c;
+        text = `(${a} - ${b}) × ${c}`;
+      }
+
+      if (op === "mix3") {
+        answer = a * c - b;
+        text = `${a} × ${c} - ${b}`;
+      }
+    }
+
+    return { text, answer };
+  }
+
+  function checkAnswer() {
+    const userAnswer = Number(answerEl.value);
+
+    if (answerEl.value === "") {
+      statusEl.textContent = "答えを入力してください";
+      statusEl.style.color = "#d93025";
+      return;
+    }
+
+    if (userAnswer === correctAnswer) {
+      score++;
+      scoreEl.textContent = score;
+      statusEl.textContent = "正解！";
+      statusEl.style.color = "#1f9d55";
+    } else {
+      statusEl.textContent = `不正解。正解は ${correctAnswer}`;
+      statusEl.style.color = "#d93025";
+    }
+
+    setTimeout(nextQuestion, 700);
+  }
+
+  function skipQuestion() {
+    statusEl.textContent = `スキップ。正解は ${correctAnswer}`;
+    statusEl.style.color = "#777";
+    setTimeout(nextQuestion, 700);
+  }
+
+  function finishGame() {
+    clearInterval(timer);
+
+    document.getElementById("game").style.display = "none";
+    document.getElementById("result").style.display = "block";
+
+    let message = "";
+
+    if (score >= 9) {
+      message = "すごい！暗算マスター級です。";
+    } else if (score >= 6) {
+      message = "かなり良いです。もう少しで上級者！";
+    } else if (score >= 3) {
+      message = "まずまずです。練習すれば伸びます。";
+    } else {
+      message = "ゆっくりで大丈夫。初級から慣れていきましょう。";
+    }
+
+    document.getElementById("result").innerHTML = `
+      <div class="result">
+        <h2>結果発表</h2>
+        <p>${totalQuestions}問中 ${score}問 正解</p>
+        <p>${message}</p>
+        <button onclick="location.reload()">もう一度プレイ</button>
+      </div>
+    `;
+  }
+
+  function rand(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function randomItem(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  answerEl.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      checkAnswer();
+    }
+  });
+</script>
+
+</body>
+</html>
