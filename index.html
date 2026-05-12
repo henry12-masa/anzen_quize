@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<meta name="google-site-verification" content="fI6VE2a41HjVNPJzio2iur_L8SaiEbpX48CRMR9H1PQ" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>暗算クイズ</title>
+  <title>?????</title>
   <style>
     body {
       margin: 0;
@@ -139,14 +140,14 @@
 <body>
 
 <header>
-  <h1>暗算クイズ</h1>
-  <p>頭の中だけで計算して答えよう！</p>
+  <h1>?????</h1>
+  <p>???????????????</p>
 </header>
 
 <div class="ad">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8398161859137802"
      crossorigin="anonymous"></script>
-<!-- チェス -->
+<!-- ??? -->
 <ins class="adsbygoogle"
      style="display:block"
      data-ad-client="ca-pub-8398161859137802"
@@ -160,28 +161,28 @@
 
 <div class="container">
   <div id="start">
-    <h2>難易度を選んでください</h2>
+    <h2>???????????</h2>
     <div class="level-buttons">
-      <button onclick="startGame('easy')">初級</button>
-      <button onclick="startGame('normal')">中級</button>
-      <button onclick="startGame('hard')">上級</button>
-      <button onclick="startGame('oni')">鬼畜</button>
+      <button onclick="startGame('easy')">??</button>
+      <button onclick="startGame('normal')">??</button>
+      <button onclick="startGame('hard')">??</button>
+      <button onclick="startGame('oni')">??</button>
     </div>
   </div>
 
   <div id="game" style="display:none;">
     <div class="top">
-      <div class="badge">問題：<span id="qNum">1</span> / 10</div>
-      <div class="badge">スコア：<span id="score">0</span></div>
-      <div class="badge">残り時間：<span id="time">60</span>秒</div>
+      <div class="badge">???<span id="qNum">1</span> / 10</div>
+      <div class="badge">????<span id="score">0</span></div>
+      <div class="badge">?????<span id="time">60</span>?</div>
     </div>
 
     <div class="problem" id="problem">1 + 1</div>
 
-    <input id="answer" type="number" placeholder="答えを入力" />
+    <input id="answer" type="number" placeholder="?????" />
     <br>
-    <button onclick="checkAnswer()">回答する</button>
-    <button onclick="skipQuestion()">スキップ</button>
+    <button onclick="checkAnswer()">????</button>
+    <button onclick="skipQuestion()">????</button>
 
     <div class="status" id="status"></div>
   </div>
@@ -189,7 +190,7 @@
   <div id="result" style="display:none;"></div>
 
   <div class="small">
-    ※スマホでも遊べます。Enterキーでも回答できます。
+    ???????????Enter???????????
   </div>
 </div>
 
@@ -276,14 +277,14 @@
     if (level === "normal") {
       a = rand(10, 99);
       b = rand(2, 20);
-      op = randomItem(["+", "-", "×"]);
+      op = randomItem(["+", "-", "?"]);
 
       if (op === "+") answer = a + b;
       if (op === "-") {
         if (b > a) [a, b] = [b, a];
         answer = a - b;
       }
-      if (op === "×") answer = a * b;
+      if (op === "?") answer = a * b;
 
       text = `${a} ${op} ${b}`;
     }
@@ -292,7 +293,7 @@
       a = rand(20, 99);
       b = rand(10, 50);
       c = rand(2, 9);
-      op = randomItem(["+", "-", "×"]);
+      op = randomItem(["+", "-", "?"]);
 
       if (op === "+") {
         answer = a + b + c;
@@ -304,9 +305,9 @@
         text = `${a} + ${b} - ${c}`;
       }
 
-      if (op === "×") {
+      if (op === "?") {
         answer = a * c + b;
-        text = `${a} × ${c} + ${b}`;
+        text = `${a} ? ${c} + ${b}`;
       }
     }
 
@@ -318,17 +319,17 @@
 
       if (op === "mix1") {
         answer = a + b * c;
-        text = `${a} + ${b} × ${c}`;
+        text = `${a} + ${b} ? ${c}`;
       }
 
       if (op === "mix2") {
         answer = (a - b) * c;
-        text = `(${a} - ${b}) × ${c}`;
+        text = `(${a} - ${b}) ? ${c}`;
       }
 
       if (op === "mix3") {
         answer = a * c - b;
-        text = `${a} × ${c} - ${b}`;
+        text = `${a} ? ${c} - ${b}`;
       }
     }
 
@@ -339,7 +340,7 @@
     const userAnswer = Number(answerEl.value);
 
     if (answerEl.value === "") {
-      statusEl.textContent = "答えを入力してください";
+      statusEl.textContent = "???????????";
       statusEl.style.color = "#d93025";
       return;
     }
@@ -347,10 +348,10 @@
     if (userAnswer === correctAnswer) {
       score++;
       scoreEl.textContent = score;
-      statusEl.textContent = "正解！";
+      statusEl.textContent = "???";
       statusEl.style.color = "#1f9d55";
     } else {
-      statusEl.textContent = `不正解。正解は ${correctAnswer}`;
+      statusEl.textContent = `??????? ${correctAnswer}`;
       statusEl.style.color = "#d93025";
     }
 
@@ -358,7 +359,7 @@
   }
 
   function skipQuestion() {
-    statusEl.textContent = `スキップ。正解は ${correctAnswer}`;
+    statusEl.textContent = `???????? ${correctAnswer}`;
     statusEl.style.color = "#777";
     setTimeout(nextQuestion, 700);
   }
@@ -372,21 +373,21 @@
     let message = "";
 
     if (score >= 9) {
-      message = "すごい！暗算マスター級です。";
+      message = "??????????????";
     } else if (score >= 6) {
-      message = "かなり良いです。もう少しで上級者！";
+      message = "?????????????????";
     } else if (score >= 3) {
-      message = "まずまずです。練習すれば伸びます。";
+      message = "?????????????????";
     } else {
-      message = "ゆっくりで大丈夫。初級から慣れていきましょう。";
+      message = "???????????????????????";
     }
 
     document.getElementById("result").innerHTML = `
       <div class="result">
-        <h2>結果発表</h2>
-        <p>${totalQuestions}問中 ${score}問 正解</p>
+        <h2>????</h2>
+        <p>${totalQuestions}?? ${score}? ??</p>
         <p>${message}</p>
-        <button onclick="location.reload()">もう一度プレイ</button>
+        <button onclick="location.reload()">???????</button>
       </div>
     `;
   }
